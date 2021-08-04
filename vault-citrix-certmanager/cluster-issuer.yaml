@@ -5,11 +5,11 @@ metadata:
 spec:
   vault:
     path: pki_int/sign/kube-ingress
-    server: http://10.102.33.36:8200
+    server: <Vault_URL>
     auth:
       appRole:
         path: approle
-        roleId: "eaf64b7d-bc4c-5a92-907e-f97d7b38bab8"
+        roleId: <role_id>
         secretRef:
           name: cert-manager-vault-approle
           key: secretId
