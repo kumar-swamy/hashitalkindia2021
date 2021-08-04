@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard-ingress
+  annotations:
+    ingress.citrix.com/frontend-ip: "10.102.33.43"
+    kubernetes.io/ingress.class: "citrix"
+    #cert-manager.io/cluster-issuer: "vault-issuer" 
+spec:
+  tls:
+  - secretName: citrixdemo 
+    hosts:
+      - kuard.citrixdemo.com
+  rules:
+  - host: kuard.citrixdemo.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kuard 
+            port:
+              number: 80

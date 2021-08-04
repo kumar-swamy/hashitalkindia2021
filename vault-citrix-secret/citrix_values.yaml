@@ -1,0 +1,108 @@
+# Default values for citrix-ingress-controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Citrix Ingress Controller config details
+image: quay.io/citrix/citrix-k8s-ingress-controller:1.16.9
+pullPolicy: IfNotPresent
+imagePullSecrets: []
+openshift: false
+adcCredentialSecret:
+nsIP: 10.102.33.44
+nsVIP:
+nsSNIPS:
+license:
+   accept: no
+nsPort: 443
+nsProtocol: HTTPS
+logLevel: INFO
+entityPrefix:
+kubernetesURL:
+clusterName:
+ingressClass:
+- citrix
+setAsDefaultIngressClass: True
+serviceClass:
+defaultSSLCertSecret: 'default'
+podIPsforServiceGroupMembers: False
+ignoreNodeExternalIP: False
+ipam: False
+logProxy:
+nodeWatch: true
+cncPbr: False
+nodeSelector:
+  key:
+  value:
+tolerations: []
+updateIngressStatus: True
+nsHTTP2ServerSide: "OFF"
+nsCookieVersion: "0"
+
+routeLabels:
+namespaceLabels:
+
+# Exporter config details
+exporter:
+  required: false
+  image: quay.io/citrix/citrix-adc-metrics-exporter:1.4.8
+  pullPolicy: IfNotPresent
+  ports:
+    containerPort: 8888
+
+# For CRDs supported by Citrix Ingress Controller
+crds:
+  install: true
+  retainOnDelete: false
+
+# Directory where certs can be found in the format <name>.crt and <name>.key
+cert_directory: '/vault/secrets'
+
+vault:
+  adcCredential: true
+
+# Config required to be done by Citrix Ingress Controller for sending metrics to Citrix Observability Exporter
+coeConfig:
+  required: false
+  distributedTracing:
+    enable: false
+    samplingrate: 100
+  endpoint:
+    server:
+  timeseries:
+    port: 30002
+    metrics:
+      enable: false
+      mode: 'avro'
+    auditlogs:
+      enable: false
+    events:
+      enable: false
+  transactions:
+    enable: false
+    port: 30001
+
+# Specifies whether a ServiceAccount should be created
+serviceAccount:
+  create: false
+  # The name of the ServiceAccount to use.
+  # If not set and `create` is true, a name is generated using the fullname template
+  name: cic-k8s-role
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: 'true'
+  vault.hashicorp.com/agent-inject-status: "update"
+  vault.hashicorp.com/agent-inject-secret-credential: ""
+  vault.hashicorp.com/secret-volume-path-credential: '/etc/citrix'
+  vault.hashicorp.com/agent-inject-file-credential: '.env'
+  vault.hashicorp.com/agent-inject-template-credential: |
+       {{- with secret "secret/data/citrix-adc/credential" -}}
+        NS_USER={{ .Data.data.username }}
+        NS_PASSWORD={{ .Data.data.password }}
+       {{- end }}
+  vault.hashicorp.com/role: 'cic-vault-example'
+  vault.hashicorp.com/agent-inject-secret-mycert: ""
+  vault.hashicorp.com/agent-inject-template-mycert: |
+         {{- with secret "secret/server-cert/cert" -}}
+            tls.crt: {{ .Data.data.cert }}
+            tls.key: {{ .Data.data.key }}
+         {{- end }}
