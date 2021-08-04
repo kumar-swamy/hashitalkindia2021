@@ -79,7 +79,9 @@ kubectl apply -f minimal_ingress.yaml
 # Validate the configuration in VPX
 #-------------------------------
 ssh vpx
+
 sh ssl vserver k8s-10.102.33.42_443_ssl
+
 sh certkey
 
 # Access the application
