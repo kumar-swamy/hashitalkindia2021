@@ -4,7 +4,7 @@
 #-------------
 vault secrets enable kv-v2
 
-vault kv put secret/citrix-adc/credential username=nsroot password=Dynasty@jan2020
+vault kv put secret/citrix-adc/credential username=<username> password=<password>
 
 vault kv put secret/server-cert/cert cert=@server.crt key=@server.key
 
